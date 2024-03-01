@@ -19,5 +19,5 @@ python3 __init__.py
 
 ## Libraries
 
-[Microdot](https://github.com/miguelgrinberg/microdot/)]
+[Microdot](https://github.com/miguelgrinberg/microdot/)
 [SimpleCSS](https://github.com/kevquirk/simple.css)
