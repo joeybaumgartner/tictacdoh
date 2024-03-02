@@ -4,23 +4,29 @@
         <title>Tic-Tac-Doh!</title>
         <meta charset="UTF-8">
         <link rel="stylesheet" href="https://unpkg.com/simpledotcss/simple.css">
-        <link rel="stylesheet" href="/static/table.css">
+        <link rel="stylesheet" href="/static/css/table.css">
     </head>
     <body>
         <div>
-            <h1>{player_name}'s Turn</h1>
+            <h1><span id="player_name">&nbsp;</span>'s Turn</h1>
             <table>
                 <tr>
-                    <td>{board[0]}</td><td>{board[1]}</td><td>{board[2]}</td>
+                    <td id="board_0">&nbsp;</td>
+                    <td id="board_1">&nbsp;</td>
+                    <td id="board_2">&nbsp;</td>
                 </tr>
                 <tr>
-                    <td>{board[3]}</td><td>{board[4]}</td><td>{board[5]}</td>
+                    <td id="board_3">&nbsp;</td>
+                    <td id="board_4">&nbsp;</td>
+                    <td id="board_5">&nbsp;</td>
                 </tr>
                 <tr>
-                    <td>{board[6]}</td><td>{board[7]}</td><td>{board[8]}</td>
+                    <td id="board_6">&nbsp;</td>
+                    <td id="board_7">&nbsp;</td>
+                    <td id="board_8">&nbsp;</td>
                 </tr>
             </table>
-            <p class="board">Enter the square you want to put your "{player_mark}".<br> {alert_message}</p>
+            <p class="board">Enter the square you want to put your "<span id="player_mark"></span>.<br> <span id="alert_message"></span>></p>
         
             <form name="players" method="POST" action="play">
                 <label>Location: </label><input maxlength="2" type="number" name="location"/>

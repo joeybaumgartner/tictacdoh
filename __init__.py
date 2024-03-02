@@ -2,6 +2,7 @@ from microdot import Microdot
 from microdot import redirect
 from microdot import send_file
 from tictacdoh import TicTacDoh
+import json
 
 app = Microdot()
 game = TicTacDoh()
@@ -19,7 +20,7 @@ async def start(request):
     return send_file('static/start.html', max_age=1)
 
 @app.post('/play')
-async def post_play(request):
+async def play(request):
 
     if not game.game_started: 
         game.player = ((request.form.get('player_1_name')), (request.form.get('player_2_name')))
@@ -57,5 +58,9 @@ async def win(request):
     html = html.format(player_name = game.get_current_player_name())
 
     return html, 200, {'Content-Type': 'text/html'}
+
+@app.get('/board')
+async def board(request):
+    return json.dumps(game.board)
 
 app.run(port=8080)
