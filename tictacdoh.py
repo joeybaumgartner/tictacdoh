@@ -9,6 +9,15 @@ class TicTacDoh:
         self.valid_move = True     # added object for screening if move is valid
         self.alert_message = ""    # created a bucket to send out a message
 
+    def reset(self):
+        self.player = (("Player 1", "Player 2"))
+        self.mark = (("X", "O"))
+        self.current_player_turn = 0
+        self.board = list((" ", " ", " ", " ", " ", " ", " ", " ", " "))
+        self.game_started = False
+        self.valid_move = True     # added object for screening if move is valid
+        self.alert_message = ""    # created a bucket to send out a message
+
     def player_turn(self, x: int):
         if "X" not in self.board[x] and "O" not in self.board[x]:     #checks if the game space is empty, if so, move is valid
             self.valid_move = True

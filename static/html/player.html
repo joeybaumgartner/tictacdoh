@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Tic-Tac-Doh!</title>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="/static/css/simple.css">
+        <link rel="stylesheet" href="/static/css/table.css">
+        <script type="text/javascript" src="/static/js/board.js"></script>
+        <script type="text/javascript">
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initialLoad);
+            } else {
+                initialLoad();
+            }
+        </script>
+    </head>
+    <body>
+        <div>
+            <h1><span id="player_name"></span>'s Turn</h1>
+            <table>
+                <tr>
+                    <td id="board_0" onclick="playerTurn(0);">&nbsp;</td>
+                    <td id="board_1" onclick="playerTurn(1);">&nbsp;</td>
+                    <td id="board_2" onclick="playerTurn(2);">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td id="board_3" onclick="playerTurn(3);">&nbsp;</td>
+                    <td id="board_4" onclick="playerTurn(4);">&nbsp;</td>
+                    <td id="board_5" onclick="playerTurn(5);">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td id="board_6" onclick="playerTurn(6);">&nbsp;</td>
+                    <td id="board_7" onclick="playerTurn(7);">&nbsp;</td>
+                    <td id="board_8" onclick="playerTurn(8);">&nbsp;</td>
+                </tr>
+            </table>
+            <p class="board">
+                Click on the square you want to put your "<span id="player_mark"></span>".
+            </p>
+            <p id="alert_message" class="notice">
+
+            </p>
+            <form action="reset" method="GET">
+                <input type="submit" value="Start Over" />
+            </form>
+        </div>
+    </body>
+</html>
