@@ -20,7 +20,7 @@
                     <td>{board[6]}</td><td>{board[7]}</td><td>{board[8]}</td>
                 </tr>
             </table>
-            <p class="board">Enter the square you want to put your "{player_mark}".</p>
+            <p class="board">Enter the square you want to put your "{player_mark}".<br> {alert_message}</p>
         
             <form name="players" method="POST" action="play">
                 <label>Location: </label><input maxlength="2" type="number" name="location"/>

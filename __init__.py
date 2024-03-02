@@ -42,7 +42,9 @@ async def post_play(request):
     html = ""
     with open('player.html') as f: html = f.read()
 
-    html = html.format(player_name = player_name, board = game.board, player_mark = mark)
+    html = html.format(player_name = player_name, board = game.board, player_mark = mark, alert_message = game.alert_message)
+    
+    #added game.alert_message, also a call to the var in player.html
 
     return html, 200, {'Content-Type': 'text/html'}
 
