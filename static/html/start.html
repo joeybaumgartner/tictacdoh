@@ -6,7 +6,6 @@
         <link rel="stylesheet" href="/static/css/simple.css">
         <script type="text/javascript">
             function validate() {
-                console.log("calling validate");
                 if(document.getElementById("p1_name").value == "" || document.getElementById("p2_name").value == "") {
                     document.querySelector('#error').innerHTML = "You must specify both player names.";
                     document.querySelector('#error').classList.add("notice");
