@@ -4,7 +4,7 @@ A simple Microdot version of Tic-Tac-Toe. This is just a simple proof-of-
 concept of how to make a simple multiplayer game through thsi interface.
 
 Core game logic lives in `tictacotoe.py`. All input/output goes through the
-pages hosted by the server via `__init.py__`. Similarly, there's a command line
+pages hosted by the server via `main.py`. Similarly, there's a command line
 version via `tictacto-cli.py` that uses the same underlying game logic as the
 web-based version.
 
