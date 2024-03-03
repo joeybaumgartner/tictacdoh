@@ -15,7 +15,7 @@ into the same folder as this repository, and [simple.css](https://github.com/kev
 into the `/static/css/` folder. Run this from the command line:
 
 ```sh
-python3 __init__.py
+python3 main.py
 ```
 
 ## Libraries

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Tic-Tac-Doh! Registration</title>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="/static/css/simple.css">
+        <script type="text/javascript">
+            async function setup() {
+
+                const request = new Request('/canRegister');
+
+                fetch(request)
+                .then(response => {
+                    if(!response.ok) {
+                        throw new Error('Network response error');
+                    }
+                    return response.json();
+                })
+                .then(result => {
+                    if(result.can_register) {
+                        document.querySelector('#nameForm').style.display = '';
+                        document.querySelector('#error').innerHTML = "";
+                        document.querySelector('#error').classList.remove("notice");
+                    }
+                    else {
+                        document.querySelector('#nameForm').style.display = 'none';
+                        document.querySelector('#error').innerHTML = "The server is currently not accepting players.";
+                        document.querySelector('#error').classList.add("notice");
+                    }
+                })
+                .catch(error => {
+                    console.error(error)
+
+                    document.querySelector('#nameForm').style.display = 'none';
+                    document.querySelector('#error').innerHTML = `The server failed to respond with this error: ${error}.`;
+                    document.querySelector('#error').classList.add("notice");
+                });
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', setup);
+            } else {
+                setup();
+            }
+
+            function validate() {
+                if(document.getElementById("player_name").value == "") {
+                    document.querySelector('#error').innerHTML = "You must specify your name.";
+                    document.querySelector('#error').classList.add("notice");
+                }
+                else {
+                    document.querySelector('#error').classList.remove("notice");
+                    player.submit();
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <div>
+            <h1>Tic-Tac-Doh!</h1>
+            <p>This is a simple implementation of Tic-Tac-Toe done on Microdot.</p>
+            <form name="player" id="nameForm" method="POST" action="register">
+                <label>Name</label><input type="text" id="player_name" name="player_name"/>
+                <input type="button" id="buttonSubmit" onclick="validate();" value="Submit"/>
+            </form>
+
+            <p id="error"></p>
+        </div>
+    </body>
+</html>
