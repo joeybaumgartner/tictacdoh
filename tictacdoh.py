@@ -25,6 +25,16 @@ class TicTacDoh:
         else: self.valid_move = False
             
     def get_current_player(self) -> int:
+        """Returns the number representing the current player.
+
+        Parameters:
+        self (object): Current object.
+
+        Returns:
+        int: Current number of players.
+    
+        """
+        
         return self.current_player_turn
 
     def get_current_player_name(self) -> str:

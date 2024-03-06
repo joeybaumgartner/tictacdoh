@@ -19,22 +19,84 @@
                 .then(result => {
                     if(result.can_register) {
                         document.querySelector('#nameForm').style.display = '';
-                        document.querySelector('#error').innerHTML = "";
-                        document.querySelector('#error').classList.remove("notice");
+                        document.querySelector('#message').innerHTML = "";
+                        document.querySelector('#message').classList.remove("notice");
+
+                        // After registration, put user in waiting room. If waiting
+                        // room is ready, kick them over to the game.
                     }
                     else {
                         document.querySelector('#nameForm').style.display = 'none';
-                        document.querySelector('#error').innerHTML = "The server is currently not accepting players.";
-                        document.querySelector('#error').classList.add("notice");
+                        document.querySelector('#message').innerHTML = "The server is currently not accepting players.";
+                        document.querySelector('#message').classList.add("notice");
                     }
                 })
                 .catch(error => {
                     console.error(error)
 
                     document.querySelector('#nameForm').style.display = 'none';
-                    document.querySelector('#error').innerHTML = `The server failed to respond with this error: ${error}.`;
-                    document.querySelector('#error').classList.add("notice");
+                    document.querySelector('#message').innerHTML = `The server failed to respond with this error: ${error}.`;
+                    document.querySelector('#message').classList.add("notice");
                 });
+            }
+
+            function register() {
+                
+                const formData = new FormData(nameForm);
+                const searchParams = new URLSearchParams(formData);
+                console.log(Array.from(formData));
+
+                const options = {
+                    method: "POST",
+                    body: searchParams
+                };
+
+                var request = new Request('/register', options);
+
+                fetch(request)
+                .then(response => {
+                    if(!response.ok) {
+                        //throw error
+                    }
+
+                    return response.json();
+                })
+                .then(data => {
+                    if(data.registered) {
+                        timer();
+
+                        document.querySelector('#nameForm').style.display = 'none';
+                        document.querySelector('#message').innerHTML = "Waiting Room: Waiting for Other Players";
+                        document.querySelector('#message').classList.add("notice");
+                    }
+                })
+                .catch(error => {
+                    // handle error
+                });
+            }
+
+            function timer() {
+                var timer = setInterval(function() {
+                    var request = new Request('/gameReady');
+
+                    fetch(request) 
+                    .then(response => {
+                        if(!response.ok) {
+                            // throw error
+                        }
+
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Redirect user to the player.html pagen if the game is ready.
+                        if(data.ready) {
+                            location.href = "/play";
+                        }
+                    })
+                    .catch(error => {
+                        // Handle errors gracefully
+                    });
+                }, 1000);
             }
 
             if (document.readyState === 'loading') {
@@ -45,12 +107,11 @@
 
             function validate() {
                 if(document.getElementById("player_name").value == "") {
-                    document.querySelector('#error').innerHTML = "You must specify your name.";
-                    document.querySelector('#error').classList.add("notice");
+                    document.querySelector('#message').innerHTML = "You must specify your name.";
+                    document.querySelector('#message').classList.add("notice");
                 }
                 else {
-                    document.querySelector('#error').classList.remove("notice");
-                    player.submit();
+                    register();
                 }
             }
         </script>
@@ -64,7 +125,7 @@
                 <input type="button" id="buttonSubmit" onclick="validate();" value="Submit"/>
             </form>
 
-            <p id="error"></p>
+            <p id="message"></p>
         </div>
     </body>
 </html>

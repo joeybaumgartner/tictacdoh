@@ -29,6 +29,13 @@ async def can_register(request):
     }
     return json.dumps(register_state), 200, { 'Content-Type': 'application/json'}
 
+@app.get('/gameReady')
+async def game_ready(request):
+    ready_state = {
+        "ready": registration.enough_to_start()
+    }
+    return json.dumps(ready_state), 200, { 'Content-Type': 'application/json' }
+
 @app.post('/register')
 async def register(request):
     
@@ -71,7 +78,8 @@ def get_player_data() -> dict:
 async def play(request):
 
     if not game.game_started: 
-        game.player = ((request.form.get('player_1_name')), (request.form.get('player_2_name')))
+        #game.player = ((request.form.get('player_1_name')), (request.form.get('player_2_name')))
+        game.player = registration.players
         game.start_game()
 
         game_data = get_player_data()
