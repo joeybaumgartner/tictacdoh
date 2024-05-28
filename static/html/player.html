@@ -8,10 +8,48 @@
         <script type="text/javascript" src="/static/js/board.js"></script>
         <script type="text/javascript">
             if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', initialLoad);
+                document.addEventListener('DOMContentLoaded', getGameStatus);
+                timer();
             } else {
-                initialLoad();
+                getGameStatus();
             }
+
+            function timer() {
+                var timer = setInterval(function() {
+                    var local_token = getCookies().token;
+
+                    var request = new Request('/currentPlayer');
+
+                    fetch(request)
+                    .then(async response => {
+                        if(!response.ok) {
+                            // display error
+                        }
+
+                        result = await response.json();
+
+                        return result;
+                    })
+                    .then(data => {
+                        getGameStatus();
+                        if(data.token == local_token) {
+                            // update board
+                            // enable for users' turn (add onClick listener)
+                        }
+                        else {
+                            // ignore input for user's turn
+                            // clear click listener for each player
+                            for(var i = 0; i < 9; ++i) {
+                                el = document.getElementById(`board_${i}`);
+                                el.removeEventListener('click', playerTurn);
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error: " + error)
+                    })
+                }, 1000);
+            } 
         </script>
     </head>
     <body>
@@ -37,12 +75,15 @@
             <p class="board">
                 Click on the square you want to put your "<span id="player_mark"></span>".
             </p>
+            <form id="game_data">
+                <input type="hidden" id="token" name="token"/>
+            </form>
             <p id="alert_message" class="notice">
 
             </p>
-            <form action="reset" method="GET">
+            <!--form action="reset" method="GET">
                 <input type="submit" value="Start Over" />
-            </form>
+            </form-->
         </div>
     </body>
 </html>

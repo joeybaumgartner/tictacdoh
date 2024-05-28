@@ -5,6 +5,7 @@
         <meta charset="UTF-8">
         <link rel="stylesheet" href="/static/css/simple.css">
         <script type="text/javascript">
+
             async function setup() {
 
                 const request = new Request('/canRegister');
@@ -38,6 +39,8 @@
                     document.querySelector('#message').innerHTML = `The server failed to respond with this error: ${error}.`;
                     document.querySelector('#message').classList.add("notice");
                 });
+
+                document.getElementById("token").value = self.crypto.randomUUID();
             }
 
             function register() {
@@ -75,6 +78,8 @@
                 });
             }
 
+            // Timer function that checks if the game is ready to play. If so,
+            // redirect client to the playing page.
             function timer() {
                 var timer = setInterval(function() {
                     var request = new Request('/gameReady');
@@ -90,7 +95,7 @@
                     .then(data => {
                         // Redirect user to the player.html pagen if the game is ready.
                         if(data.ready) {
-                            location.href = "/play";
+                            location.href = `/play`;
                         }
                     })
                     .catch(error => {
@@ -122,6 +127,7 @@
             <p>This is a simple implementation of Tic-Tac-Toe done on Microdot.</p>
             <form name="player" id="nameForm" method="POST" action="register">
                 <label>Name</label><input type="text" id="player_name" name="player_name"/>
+                <input type="hidden" id="token" name="token"/>
                 <input type="button" id="buttonSubmit" onclick="validate();" value="Submit"/>
             </form>
 

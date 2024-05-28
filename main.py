@@ -38,13 +38,18 @@ async def game_ready(request):
 
 @app.post('/register')
 async def register(request):
+    @request.after_request
+    def set_cookie_token(request, response):
+        response.set_cookie('token', request.form.get("token"))
+        return response
     
     print(f"registered users: {len(registration.players)}")
 
     register_state = {
-            "registered": False,
-            "reason": None
-        }
+        "registered": False,
+        "reason": None,
+        "token": ""
+    }
 
     if registration.at_capacity():
         # Server is at capacity, don't allow any more registrations
@@ -54,11 +59,18 @@ async def register(request):
         return json.dumps(register_state), 403, { 'Content-Type': 'application/json' }
 
     else:
-        # Register a player; create a token based on their IP address and port
+        # Register a player
         name = request.form.get("player_name")
-        player = Player(name, f"{request.client_addr[0]}{request.client_addr[1]}")
+
+        mark = "X" if len(registration.players) == 0 else "O"
+
+        player = Player(name, request.form.get("token"), mark)
+
+        print(f"Player {player.name} has token {player.token}")
+
         registration.register_user(player)
         register_state["registered"] = True
+        register_state["token"] = request.form.get("token")
 
     return json.dumps(register_state), 200, { 'Content-Type': 'application/json' }
 
@@ -74,24 +86,25 @@ def get_player_data() -> dict:
         "board": game.board
     }
 
-@app.post('/play')
+@app.route('/play', methods=['GET', 'POST'])
 async def play(request):
 
-    if not game.game_started: 
-        #game.player = ((request.form.get('player_1_name')), (request.form.get('player_2_name')))
+    if request.method == 'GET':
         game.player = registration.players
         game.start_game()
 
         game_data = get_player_data()
         return send_file('static/html/player.html', max_age = 1)
-    else:
-        location = int(request.json)
+    
+    elif request.method == 'POST':
+
+        location = int(request.json["location"])
 
         game.player_turn(location)
 
         win_state = game.check_for_win()
 
-        if win_state != 2:
+        if win_state >= 0:
             win_data = {
                 "redirect_url": "/win"
             }
@@ -103,11 +116,22 @@ async def play(request):
 
     return json.dumps(game_data), 200, {'Content-Type': 'application/json'}
 
+@app.get('/currentPlayer')
+async def current_player(request):
+
+    win_state = game.check_for_win()
+
+    data = {
+        "token": registration.players[game.current_player_turn].token,
+        "win_state": win_state
+    }
+    return json.dumps(data), 200, { 'Content-Type': 'application/json'}
+
 @app.get('/win')
 async def win(request):
     
     html = ""
-    with open('winner.html') as f: html = f.read()
+    with open('static/html/winner.html') as f: html = f.read()
 
     html = html.format(player_name = game.get_current_player_name())
 
@@ -118,9 +142,13 @@ async def reset(request):
     game.reset()
     return redirect('/')
 
-@app.get('/initial')
+@app.get('/gameStatus')
 async def board(request):
+
+    win_state = game.check_for_win()
+    
     game_data = get_player_data()
+    game_data["win_state"] = win_state
 
     return json.dumps(game_data), 200, {'Content-Type': 'application/json'}
 
