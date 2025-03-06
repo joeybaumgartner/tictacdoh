@@ -46,7 +46,7 @@ class TicTacDoh:
 
         win_states = ((0, 1, 2), (3, 4, 5), (6, 7, 8), \
                       (0, 3, 6), (1, 4, 7), (2, 5, 8), \
-                        (0, 4, 8), (2, 4, 7))
+                        (0, 4, 8), (2, 4, 6))
         for m in self.mark:
             for w in win_states:
                 if self.board[w[0]] == self.board[w[1]] == self.board[w[2]] and self.board[w[0]] != ' ': 

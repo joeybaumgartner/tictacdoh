@@ -1,6 +1,6 @@
-from microdot import Microdot
-from microdot import redirect
-from microdot import send_file
+from types import SimpleNamespace
+from microdot import Microdot, redirect, send_file
+from microdot.websocket import with_websocket
 from tictacdoh import TicTacDoh
 from registration import Registration
 from player import Player
@@ -9,6 +9,9 @@ import json
 app = Microdot()
 game = TicTacDoh()
 registration = Registration(2, 2)
+
+# A set for keeping track of websocket clients
+clients = set()
 
 # Handler for all static content (CSS, JS, HTML, images, etc.)
 @app.route('/static/<path:path>')
@@ -75,16 +78,66 @@ async def register(request):
     return json.dumps(register_state), 200, { 'Content-Type': 'application/json' }
 
 
-def get_player_data() -> dict:
+def get_player_data(game_won = False) -> dict:
     player_name = game.get_current_player_name()
     mark = game.mark[game.current_player_turn]
-    
+
     return {
         "player_name": player_name, 
         "player_mark": mark, 
         "alert_message": game.alert_message, 
-        "board": game.board
+        "board": game.board,
+        "game_won": game_won
     }
+
+@app.route('/ws_play')
+@with_websocket
+async def ws_play_handler(request, ws):
+    global clients
+    clients.add(ws)
+    
+    try:
+        # Force this to send to everybody off the hop?
+        await ws.send(json.dumps({'game': get_player_data()}))
+        while True:
+            message = await ws.receive()
+            if message is None:
+                break
+            try:
+                data = json.loads(message, object_hook=lambda d:SimpleNamespace(**d))
+
+                currentToken = registration.players[game.current_player_turn].token
+
+                if game.check_for_win() == -1:
+                    # if game is won, don't do anything
+
+                    if data.location is not None and currentToken == data.token:
+                        game.player_turn(data.location)
+
+                        win_state = game.check_for_win()
+
+                        if win_state >= 0:
+                            game_state = {'game': get_player_data(True)}
+                        else:
+                            game.next_turn()
+                            game_state = {'game': get_player_data()}
+
+                        for client in clients.copy():
+                            try:
+                                await client.send(json.dumps(game_state))
+                            except Exception as e:
+                                print(f"Player error sending data to client: {e}")
+                    else:
+                        s = "Wait your turn!"
+                        await ws.send(json.dumps({'wait': s}))
+
+            except Exception as e:
+                print(f"General error sending data to client: {e}")
+
+    finally:
+        print("Removing client here...not sure why")
+        if clients.__contains__(ws):
+            clients.remove(ws)
 
 @app.route('/play', methods=['GET', 'POST'])
 async def play(request):
