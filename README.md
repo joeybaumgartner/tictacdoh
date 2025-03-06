@@ -10,8 +10,8 @@ web-based version.
 
 ## Running
 
-Copy [microdot.py](https://github.com/miguelgrinberg/microdot/blob/main/src/microdot/microdot.py)
-into the microdot folder of  this repository, and [simple.css](https://github.com/kevquirk/simple.css/blob/main/simple.css) 
+Clone this repository, and create a folder called `microdot` within it. Copy [microdot.py](https://github.com/miguelgrinberg/microdot/blob/main/src/microdot/microdot.py), and [websocket.py](https://github.com/miguelgrinberg/microdot/blob/main/src/microdot/websocket.py)
+into this folder of the repository, and [simple.css](https://github.com/kevquirk/simple.css/blob/main/simple.css) 
 into the `/static/css/` folder. Run this from the command line:
 
 ```sh
