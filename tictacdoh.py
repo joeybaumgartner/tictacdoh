@@ -25,10 +25,20 @@ class TicTacDoh:
         else: self.valid_move = False
             
     def get_current_player(self) -> int:
+        """Returns the number representing the current player.
+
+        Parameters:
+        self (object): Current object.
+
+        Returns:
+        int: Current number of players.
+    
+        """
+        
         return self.current_player_turn
 
     def get_current_player_name(self) -> str:
-        return self.player[self.current_player_turn]
+        return self.player[self.current_player_turn].name
 
     def check_for_win(self) -> int:
 
@@ -36,13 +46,13 @@ class TicTacDoh:
 
         win_states = ((0, 1, 2), (3, 4, 5), (6, 7, 8), \
                       (0, 3, 6), (1, 4, 7), (2, 5, 8), \
-                        (0, 4, 8), (2, 4, 7))
+                        (0, 4, 8), (2, 4, 6))
         for m in self.mark:
             for w in win_states:
-                if self.board[w[0]] == self.board[w[1]] == self.board[w[2]] == m: 
-                    return self.mark.index(m)
+                if self.board[w[0]] == self.board[w[1]] == self.board[w[2]] and self.board[w[0]] != ' ': 
+                    return self.get_current_player()
            
-        return 2
+        return -1
     
     def start_game(self):
         self.game_started = True

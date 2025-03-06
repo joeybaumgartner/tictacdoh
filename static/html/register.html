@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Tic-Tac-Doh! Registration</title>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="/static/css/simple.css">
+        <script type="text/javascript">
+
+            async function setup() {
+
+                const request = new Request('/canRegister');
+
+                fetch(request)
+                .then(response => {
+                    if(!response.ok) {
+                        throw new Error('Network response error');
+                    }
+                    return response.json();
+                })
+                .then(result => {
+                    if(result.can_register) {
+                        document.querySelector('#nameForm').style.display = '';
+                        document.querySelector('#message').innerHTML = "";
+                        document.querySelector('#message').classList.remove("notice");
+
+                        // After registration, put user in waiting room. If waiting
+                        // room is ready, kick them over to the game.
+                    }
+                    else {
+                        document.querySelector('#nameForm').style.display = 'none';
+                        document.querySelector('#message').innerHTML = "The server is currently not accepting players.";
+                        document.querySelector('#message').classList.add("notice");
+                    }
+                })
+                .catch(error => {
+                    console.error(error)
+
+                    document.querySelector('#nameForm').style.display = 'none';
+                    document.querySelector('#message').innerHTML = `The server failed to respond with this error: ${error}.`;
+                    document.querySelector('#message').classList.add("notice");
+                });
+
+                document.getElementById("token").value = self.crypto.randomUUID();
+            }
+
+            function register() {
+                
+                const formData = new FormData(nameForm);
+                const searchParams = new URLSearchParams(formData);
+                console.log(Array.from(formData));
+
+                const options = {
+                    method: "POST",
+                    body: searchParams
+                };
+
+                var request = new Request('/register', options);
+
+                fetch(request)
+                .then(response => {
+                    if(!response.ok) {
+                        //throw error
+                    }
+
+                    return response.json();
+                })
+                .then(data => {
+                    if(data.registered) {
+                        timer();
+
+                        document.querySelector('#nameForm').style.display = 'none';
+                        document.querySelector('#message').innerHTML = "Waiting Room: Waiting for Other Players";
+                        document.querySelector('#message').classList.add("notice");
+                    }
+                })
+                .catch(error => {
+                    // handle error
+                });
+            }
+
+            // Timer function that checks if the game is ready to play. If so,
+            // redirect client to the playing page.
+            function timer() {
+                var timer = setInterval(function() {
+                    var request = new Request('/gameReady');
+
+                    fetch(request) 
+                    .then(response => {
+                        if(!response.ok) {
+                            // throw error
+                        }
+
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Redirect user to the player.html pagen if the game is ready.
+                        if(data.ready) {
+                            location.href = `/play`;
+                        }
+                    })
+                    .catch(error => {
+                        // Handle errors gracefully
+                    });
+                }, 1000);
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', setup);
+            } else {
+                setup();
+            }
+
+            function validate() {
+                if(document.getElementById("player_name").value == "") {
+                    document.querySelector('#message').innerHTML = "You must specify your name.";
+                    document.querySelector('#message').classList.add("notice");
+                }
+                else {
+                    register();
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <div>
+            <h1>Tic-Tac-Doh!</h1>
+            <p>This is a simple implementation of Tic-Tac-Toe done on Microdot.</p>
+            <form name="player" id="nameForm" method="POST" action="register">
+                <label>Name</label><input type="text" id="player_name" name="player_name"/>
+                <input type="hidden" id="token" name="token"/>
+                <input type="button" id="buttonSubmit" onclick="validate();" value="Submit"/>
+            </form>
+
+            <p id="message"></p>
+        </div>
+    </body>
+</html>

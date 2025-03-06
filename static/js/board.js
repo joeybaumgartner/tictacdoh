@@ -1,13 +1,14 @@
 async function playerTurn(data) {
 
     try {
+        payload = { "location": data, "token": getCookies().token };
         const response = await fetch('/play', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             redirect: "follow",
-            body: JSON.stringify(data)
+            body: JSON.stringify(payload)
         });
 
         const result = await response.json();
@@ -19,7 +20,7 @@ async function playerTurn(data) {
             location.href = result.redirect_url
         }
     }
-    catch (error){
+    catch (error) {
         console.error("Error:", error);
     }
 }
@@ -39,13 +40,25 @@ function setGameBoardData(data) {
     for(var i = 0; i < 9; ++i) {
         document.querySelector('#board_' + i).innerHTML = data.board[i];
     }
+
+    //document.getElementById("token").value = data.token
 }
 
-async function initialLoad() {
-    const response = await fetch('/initial');
+async function getGameStatus() {
+    const response = await fetch('/gameStatus');
     const result = await response.json();
 
     if(result) {
         setGameBoardData(result);
+
+        if(result.win_state >= 0) {
+            location.href = "/win"
+        }
     }
+}
+
+function getCookies() {
+    cookies = document.cookie.split(';').map(item => item.split('=')).reduce((acc, [k, v]) => (acc[k.trim().replace('"', '')] = v) && acc, {});
+
+    return cookies;
 }

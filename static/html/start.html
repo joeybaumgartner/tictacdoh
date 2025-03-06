@@ -4,17 +4,31 @@
         <title>Tic-Tac-Doh!</title>
         <meta charset="UTF-8">
         <link rel="stylesheet" href="/static/css/simple.css">
+        <script type="text/javascript">
+            function validate() {
+                if(document.getElementById("p1_name").value == "" || document.getElementById("p2_name").value == "") {
+                    document.querySelector('#error').innerHTML = "You must specify both player names.";
+                    document.querySelector('#error').classList.add("notice");
+                    return false;
+                }
+                else {
+                    document.querySelector('#error').classList.remove("notice");
+                    players.submit();
+                }
+            }
+        </script>
     </head>
     <body>
         <div>
             <h1>Tic-Tac-Doh!</h1>
             <p>This is a simple implementation of Tic-Tac-Toe done on Microdot.</p>
-            <form name="players" method="POST" action="play">
-                <label>Player 1 Name: </label><input type="text" name="player_1_name"/>
+            <form name="players" method="POST">
+                <label>Player 1 Name: </label><input type="text" id="p1_name" name="player_1_name"/>
                 <br />
-                <label>Player 2 Name: </label><input type="text" name="player_2_name"/>
+                <label>Player 2 Name: </label><input type="text" id="p2_name" name="player_2_name"/>
                 <br />
-                <input type="submit" />
+                <p id="error"></p>
+                <input type="button" id="buttonSubmit" onclick="validate();" value="Submit"/>
             </form>
         </div>
     </body>

@@ -7,10 +7,48 @@
         <link rel="stylesheet" href="/static/css/table.css">
         <script type="text/javascript" src="/static/js/board.js"></script>
         <script type="text/javascript">
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', initialLoad);
-            } else {
-                initialLoad();
+            let ws;
+
+            function connect() {
+                ws = new WebSocket("ws://" + location.host + "/ws_play");
+                ws.onopen = function() {
+                    console.log("WebSocket connected");
+                };
+
+                ws.onmessage = function(event) {
+                    let data = JSON.parse(event.data);
+
+                    console.log(data);
+
+                    if(data.wait) {
+                        el = document.getElementById(`alert_message`);
+                        el.textContent = data.wait;
+                    }
+                    else {
+                        setGameBoardData(data.game)
+                        if(data.game.game_won) {
+                            el = document.getElementById(`alert_message`);
+                            el.textContent = `The winner is ${data.game.player_name}!`;
+
+                            ws.onclose = function() { }                    
+                        }
+                    }
+                };
+
+                ws.onclose = function() {
+                    console.log("WebSocket closed, retrying in 2 seconds");
+                    setTimeout(connect, 2000);
+                };
+
+            }
+
+            function cellClicked(index) {
+                let msg = JSON.stringify({location: index, token: getCookies().token});
+                ws.send(msg);
+            }
+
+            window.onload = function() {
+                connect();
             }
         </script>
     </head>
@@ -19,19 +57,19 @@
             <h1><span id="player_name"></span>'s Turn</h1>
             <table>
                 <tr>
-                    <td id="board_0" onclick="playerTurn(0);">&nbsp;</td>
-                    <td id="board_1" onclick="playerTurn(1);">&nbsp;</td>
-                    <td id="board_2" onclick="playerTurn(2);">&nbsp;</td>
+                    <td id="board_0" onclick="cellClicked(0);">&nbsp;</td>
+                    <td id="board_1" onclick="cellClicked(1);">&nbsp;</td>
+                    <td id="board_2" onclick="cellClicked(2);">&nbsp;</td>
                 </tr>
                 <tr>
-                    <td id="board_3" onclick="playerTurn(3);">&nbsp;</td>
-                    <td id="board_4" onclick="playerTurn(4);">&nbsp;</td>
-                    <td id="board_5" onclick="playerTurn(5);">&nbsp;</td>
+                    <td id="board_3" onclick="cellClicked(3);">&nbsp;</td>
+                    <td id="board_4" onclick="cellClicked(4);">&nbsp;</td>
+                    <td id="board_5" onclick="cellClicked(5);">&nbsp;</td>
                 </tr>
                 <tr>
-                    <td id="board_6" onclick="playerTurn(6);">&nbsp;</td>
-                    <td id="board_7" onclick="playerTurn(7);">&nbsp;</td>
-                    <td id="board_8" onclick="playerTurn(8);">&nbsp;</td>
+                    <td id="board_6" onclick="cellClicked(6);">&nbsp;</td>
+                    <td id="board_7" onclick="cellClicked(7);">&nbsp;</td>
+                    <td id="board_8" onclick="cellClicked(8);">&nbsp;</td>
                 </tr>
             </table>
             <p class="board">
@@ -40,9 +78,9 @@
             <p id="alert_message" class="notice">
 
             </p>
-            <form action="reset" method="GET">
+            <!--form action="reset" method="GET">
                 <input type="submit" value="Start Over" />
-            </form>
+            </form-->
         </div>
     </body>
 </html>
