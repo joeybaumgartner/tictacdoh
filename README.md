@@ -8,17 +8,29 @@ pages hosted by the server via `main.py`. Similarly, there's a command line
 version via `tictacdoh-cli.py` that uses the same underlying game logic as the
 web-based version.
 
+## Requirements
+
+- This project uses SimpleNamespace which will require at least Python 3.3, but most
+  testing has been done on Python 3.13.
+
 ## Running
 
-Clone this repository, and create a folder called `microdot` within it. Copy [microdot.py](https://github.com/miguelgrinberg/microdot/blob/main/src/microdot/microdot.py), and [websocket.py](https://github.com/miguelgrinberg/microdot/blob/main/src/microdot/websocket.py)
-into this folder of the repository, and [simple.css](https://github.com/kevquirk/simple.css/blob/main/simple.css) 
+Clone this repository, and create a folder called `microdot` within it, and copy the 
+following files into the folder:
+
+- [microdot.py](https://raw.githubusercontent.com/miguelgrinberg/microdot/refs/heads/main/src/microdot/microdot.py)
+- [websocket.py](https://raw.githubusercontent.com/miguelgrinberg/microdot/refs/heads/main/src/microdot/websocket.py)
+- [__init.py__](https://raw.githubusercontent.com/miguelgrinberg/microdot/refs/heads/main/src/microdot/__init__.py)
+- [helpers.py](https://raw.githubusercontent.com/miguelgrinberg/microdot/refs/heads/main/src/microdot/helpers.py)
+
+Copy [simple.css](https://github.com/kevquirk/simple.css/blob/main/simple.css) 
 into the `/static/css/` folder. Run this from the command line:
 
 ```sh
 python3 main.py
 ```
 
-## Libraries
+## External Libraries
 
 [Microdot](https://github.com/miguelgrinberg/microdot/)
 
